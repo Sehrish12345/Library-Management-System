@@ -33,29 +33,44 @@
 
     </div>
 
+     <div class="search-box">
 
-    <div class="search-box">
+    <form method="GET" action="/">
 
-        <form method="GET" action="/">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search book..."
+            value="{{ search }}"
+        >
 
-            <input
-                type="text"
-                name="search"
-                placeholder="Search book..."
-                value="{{ search }}"
-            >
+        <select name="category">
 
-            <button type="submit">
-                Search
-            </button>
+            <option value="">
+                All Categories
+            </option>
 
-            <a href="{{ url_for('home') }}">
-                Clear
-            </a>
+            {% for category in categories %}
 
-        </form>
+            <option value="{{ category[0] }}">
+                {{ category[1] }}
+            </option>
 
-    </div>
+            {% endfor %}
+
+        </select>
+
+        <button type="submit">
+            Filter
+        </button>
+
+        <a href="{{ url_for('home') }}">
+            Clear
+        </a>
+
+    </form>
+
+</div>
 
 
     <div class="table-container">

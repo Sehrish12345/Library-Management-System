@@ -7,7 +7,7 @@ connection = psycopg.connect(
     port=5432
 )
 
-print("Database connected successfully!")
+# print("Database connected successfully!")
 
 
 # .\venv\Scripts\Activate.ps1

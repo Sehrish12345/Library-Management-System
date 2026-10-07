@@ -56,8 +56,18 @@ def home():
         return redirect(url_for("login"))
 
     search = request.args.get("search", "")
+    category = request.args.get("category", "")
+    author = request.args.get("author", "")
 
     cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT category_id, category_name
+        FROM category
+        ORDER BY category_name
+    """)
+
+    categories = cursor.fetchall()
 
     if search:
         cursor.execute("""
@@ -67,14 +77,19 @@ def home():
         """, (f"%{search}%",))
     else:
         cursor.execute("""
-    SELECT book_id, title, isbn, publication_year, publisher
-    FROM book
-""")
+            SELECT book_id, title, isbn, publication_year, publisher
+            FROM book
+        """)
 
     books = cursor.fetchall()
     cursor.close()
 
-    return render_template("home.html", books=books, search=search)
+    return render_template(
+        "home.html",
+        books=books,
+        search=search,
+        categories=categories
+    )
 
 @app.route("/book/<int:book_id>")
 def book_details(book_id):
