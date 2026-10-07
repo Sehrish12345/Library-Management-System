@@ -7,6 +7,9 @@ connection = psycopg.connect(
     port=5432
 )
 
-# print("Database connected successfully!")
+print("Database connected successfully!")
 
 
+# .\venv\Scripts\Activate.ps1
+# python library_app.py
+# http://127.0.0.1:5000
