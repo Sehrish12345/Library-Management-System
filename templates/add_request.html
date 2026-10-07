@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Book Request</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Add Book Request</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book</label>
+
+            <select name="book_id" required>
+    <option value="">Select Book</option>
+
+    {% for book in books %}
+    <option value="{{ book[0] }}">
+        {{ book[1] }}
+    </option>
+    {% endfor %}
+</select>
+
+
+            <label>Member</label>
+
+            <select name="member_id" required>
+                <option value="">Select Member</option>
+
+                {% for member in members %}
+                <option value="{{ member[0] }}">
+                    {{ member[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Request Date</label>
+            <input type="date" name="request_date" required>
+
+            <label>Status</label>
+
+            <select name="status" required>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+
+            <button type="submit" class="add-book-button">
+                Add Request
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('requests') }}">
+            ← Back to Requests
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Borrowing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Add Borrowing</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book Copy</label>
+
+            <select name="copy_id" required>
+                <option value="">Select Book</option>
+
+                {% for copy in copies %}
+                <option value="{{ copy[0] }}">
+                    {{ copy[1] }} — Copy {{ copy[0] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Member</label>
+
+            <select name="member_id" required>
+                <option value="">Select Member</option>
+
+                {% for member in members %}
+                <option value="{{ member[0] }}">
+                    {{ member[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Branch</label>
+
+            <select name="branch_id" required>
+                <option value="">Select Branch</option>
+
+                {% for branch in branches %}
+                <option value="{{ branch[0] }}">
+                    {{ branch[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Borrow Date</label>
+            <input type="date" name="borrow_date" required>
+
+            <label>Due Date</label>
+            <input type="date" name="due_date" required>
+
+            <button type="submit" class="add-book-button">
+                Add Borrowing
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('borrowing') }}">
+            ← Back to Borrowing
+        </a>
+
+    </div>
+
+</body>
+</html>

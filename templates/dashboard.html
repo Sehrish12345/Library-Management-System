@@ -1,0 +1,88 @@
+<!DOCTYPE html> <html> <head> <title>Library Management System - Dashboard</title>
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head> <body>
+<header class="dashboard-header">
+
+    <h1>Library Management System</h1>
+
+    <div class="dashboard-user">
+        Welcome, {{ session["username"] }}
+        |
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+</header>
+
+
+<main class="dashboard-container">
+
+    <h2>Dashboard</h2>
+
+    <div class="dashboard-grid">
+
+        <a href="{{ url_for('home') }}" class="dashboard-card">
+            <h3>📚 Books</h3>
+            <p>Manage library books</p>
+        </a>
+
+        <a href="{{ url_for('authors') }}" class="dashboard-card">
+            <h3>✍️ Authors</h3>
+            <p>Manage book authors</p>
+        </a>
+
+        <a href="{{ url_for('categories') }}" class="dashboard-card">
+            <h3>🏷️ Categories</h3>
+            <p>Manage book categories</p>
+        </a>
+
+        <a href="{{ url_for('members') }}" class="dashboard-card">
+            <h3>👥 Members</h3>
+            <p>Manage library members</p>
+        </a>
+
+        <a href="{{ url_for('branches') }}" class="dashboard-card">
+            <h3>🏢 Branches</h3>
+            <p>Manage library branches</p>
+        </a>
+
+        <a href="{{ url_for('staff') }}" class="dashboard-card">
+            <h3>👨‍💼 Staff</h3>
+            <p>Manage library staff</p>
+        </a>
+
+        <a href="{{ url_for('book_copies') }}" class="dashboard-card">
+            <h3>📖 Book Copies</h3>
+            <p>Track physical book copies</p>
+        </a>
+
+        <a href="{{ url_for('borrowing') }}" class="dashboard-card">
+            <h3>🔄 Borrowing</h3>
+            <p>Manage borrowed books</p>
+        </a>
+
+        <a href="{{ url_for('requests') }}" class="dashboard-card">
+            <h3>📋 Requests</h3>
+            <p>Manage book requests</p>
+        </a>
+        <a href="{{ url_for('returns') }}" class="dashboard-card">
+    <h3>↩️ Returns</h3>
+    <p>View returned books</p>
+        </a>
+
+        <a href="{{ url_for('overdue_books') }}" class="dashboard-card">
+    <h3>⏰ Overdue Books</h3>
+    <p>View overdue books</p>
+        </a>
+
+        <a href="{{ url_for('member_accounts') }}" class="dashboard-card">
+    <h3>💰 Accounts</h3>
+    <p>Manage member accounts</p>
+        </a>
+
+    </div>
+
+</main>
+
+</body> </html>

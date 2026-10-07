@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Borrowing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Borrowing</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book Copy</label>
+
+            <select name="copy_id" required>
+                {% for copy in copies %}
+                <option value="{{ copy[0] }}"
+                    {% if copy[0] == borrowing[1] %}selected{% endif %}>
+                    {{ copy[1] }} — Copy {{ copy[0] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Member</label>
+
+            <select name="member_id" required>
+                {% for member in members %}
+                <option value="{{ member[0] }}"
+                    {% if member[0] == borrowing[2] %}selected{% endif %}>
+                    {{ member[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Branch</label>
+
+            <select name="branch_id" required>
+                {% for branch in branches %}
+                <option value="{{ branch[0] }}"
+                    {% if branch[0] == borrowing[3] %}selected{% endif %}>
+                    {{ branch[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Borrow Date</label>
+            <input type="date"
+                   name="borrow_date"
+                   value="{{ borrowing[4] }}"
+                   required>
+
+            <label>Due Date</label>
+            <input type="date"
+                   name="due_date"
+                   value="{{ borrowing[5] }}"
+                   required>
+
+            <label>Return Date</label>
+            <input type="date"
+                   name="return_date"
+                   value="{{ borrowing[6] or '' }}">
+
+            <button type="submit" class="update-button">
+                Update Borrowing
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('borrowing') }}">
+            ← Back to Borrowing
+        </a>
+
+    </div>
+
+</body>
+</html>

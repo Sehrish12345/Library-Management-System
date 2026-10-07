@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Account Transaction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Account Transaction</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Member</label>
+
+            <select name="member_id" required>
+                {% for member in members %}
+                <option value="{{ member[0] }}"
+                    {% if member[0] == account[1] %}selected{% endif %}>
+                    {{ member[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Borrowing</label>
+
+            <select name="borrowing_id" required>
+                {% for borrowing in borrowings %}
+                <option value="{{ borrowing[0] }}"
+                    {% if borrowing[0] == account[2] %}selected{% endif %}>
+                    #{{ borrowing[0] }} - {{ borrowing[1] }} ({{ borrowing[2] }})
+                </option>
+                {% endfor %}
+            </select>
+
+            <label>Amount</label>
+
+            <input type="number"
+                   name="amount"
+                   step="0.01"
+                   min="0"
+                   value="{{ account[3] }}"
+                   required>
+
+            <label>Transaction Date</label>
+
+            <input type="date"
+                   name="transaction_date"
+                   value="{{ account[4] }}"
+                   required>
+
+            <label>Status</label>
+
+            <select name="status" required>
+
+                <option value="Pending"
+                    {% if account[5] == 'Pending' %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Paid"
+                    {% if account[5] == 'Paid' %}selected{% endif %}>
+                    Paid
+                </option>
+
+                <option value="Unpaid"
+                    {% if account[5] == 'Unpaid' %}selected{% endif %}>
+                    Unpaid
+                </option>
+
+            </select>
+
+            <button type="submit" class="update-button">
+                Update Transaction
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('member_accounts') }}">
+            ← Back to Member Accounts
+        </a>
+
+    </div>
+
+</body>
+</html>

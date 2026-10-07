@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Assign Author</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Assign Author</h1>
+
+        <form method="POST">
+
+            <label>Select Author</label>
+
+            <select name="author_id" required>
+
+                <option value="">
+                    Select Author
+                </option>
+
+                {% for author in authors %}
+
+                <option value="{{ author[0] }}">
+                    {{ author[1] }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <button type="submit" class="add-book-button">
+                Assign Author
+            </button>
+
+        </form>
+
+        <br>
+
+        <a
+            href="{{ url_for('book_details', book_id=book_id) }}"
+            class="back-button"
+        >
+            ← Back to Book Details
+        </a>
+
+    </div>
+
+</body>
+
+</html>

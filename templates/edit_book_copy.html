@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Book Copy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Book Copy</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book</label>
+
+            <select name="book_id" required>
+
+                {% for book in books %}
+                <option value="{{ book[0] }}"
+                    {% if book[0] == copy[1] %}selected{% endif %}>
+                    {{ book[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Branch</label>
+
+            <select name="branch_id" required>
+
+                {% for branch in branches %}
+                <option value="{{ branch[0] }}"
+                    {% if branch[0] == copy[2] %}selected{% endif %}>
+                    {{ branch[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Status</label>
+
+            <select name="status" required>
+
+                <option value="Available"
+                    {% if copy[3] == 'Available' %}selected{% endif %}>
+                    Available
+                </option>
+
+                <option value="Borrowed"
+                    {% if copy[3] == 'Borrowed' %}selected{% endif %}>
+                    Borrowed
+                </option>
+
+                <option value="Lost"
+                    {% if copy[3] == 'Lost' %}selected{% endif %}>
+                    Lost
+                </option>
+
+                <option value="Damaged"
+                    {% if copy[3] == 'Damaged' %}selected{% endif %}>
+                    Damaged
+                </option>
+
+            </select>
+
+            <button type="submit" class="update-button">
+                Update Book Copy
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('book_copies') }}">
+            ← Back to Book Copies
+        </a>
+
+    </div>
+
+</body>
+</html>

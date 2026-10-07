@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Returned Books</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>Returned Books</h1>
+
+    <div class="top-bar">
+
+        <a href="{{ url_for('borrowing') }}" class="back-button">
+            ← Back to Borrowing
+        </a>
+
+        <a href="{{ url_for('home') }}" class="back-button">
+            ← Back to Books
+        </a>
+
+    </div>
+
+    <div class="authors-container">
+
+        <table>
+
+            <tr>
+                <th>Borrowing ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Borrow Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+            </tr>
+
+            {% for item in returned_books %}
+            <tr>
+
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>{{ item[4] }}</td>
+                <td>{{ item[5] }}</td>
+
+            </tr>
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</body>
+</html>

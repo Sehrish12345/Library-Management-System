@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Member</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Add New Member</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Member Name</label>
+            <input type="text"
+                   name="member_name"
+                   placeholder="Enter member name"
+                   required>
+
+            <label>Email</label>
+            <input type="email"
+                   name="email"
+                   placeholder="Enter email">
+
+            <label>Phone</label>
+            <input type="text"
+                   name="phone"
+                   placeholder="Enter phone number">
+
+            <label>Address</label>
+            <input type="text"
+                   name="address"
+                   placeholder="Enter address">
+
+            <label>Registration Date</label>
+            <input type="date"
+                   name="registration_date"
+                   required>
+
+            <label>Membership Status</label>
+            <select name="membership_status" required>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+
+            <button type="submit" class="add-book-button">
+                Add Member
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('members') }}">
+            ← Back to Members
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Book Copy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Add Book Copy</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book</label>
+
+            <select name="book_id" required>
+                <option value="">Select Book</option>
+
+                {% for book in books %}
+                <option value="{{ book[0] }}">
+                    {{ book[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Branch</label>
+
+            <select name="branch_id" required>
+                <option value="">Select Branch</option>
+
+                {% for branch in branches %}
+                <option value="{{ branch[0] }}">
+                    {{ branch[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Status</label>
+
+            <select name="status" required>
+                <option value="Available">Available</option>
+                <option value="Borrowed">Borrowed</option>
+                <option value="Lost">Lost</option>
+                <option value="Damaged">Damaged</option>
+            </select>
+
+            <button type="submit" class="add-book-button">
+                Add Book Copy
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('book_copies') }}">
+            ← Back to Book Copies
+        </a>
+
+    </div>
+
+</body>
+</html>

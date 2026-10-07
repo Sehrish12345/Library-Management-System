@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Book Details</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="details-container">
+
+        {% if book %}
+
+        <div class="details-header">
+
+            <div class="book-icon">
+                📖
+            </div>
+
+            <div>
+                <h1>{{ book[1] }}</h1>
+                <p>Book Details</p>
+            </div>
+
+        </div>
+
+
+        <div class="book-details-card">
+
+            <div class="detail-row">
+                <span>Book ID</span>
+                <strong>{{ book[0] }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Title</span>
+                <strong>{{ book[1] }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>ISBN</span>
+                <strong>{{ book[2] or 'Not available' }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Publication Year</span>
+                <strong>{{ book[3] or 'Not available' }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Publisher</span>
+                <strong>{{ book[4] or 'Not available' }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Author</span>
+                <strong>{{ book[5] }}</strong>
+            </div>
+
+            <div class="detail-row">
+                <span>Category</span>
+                <strong>{{ book[6] }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="top-bar">
+
+            <a
+                href="{{ url_for('assign_author', book_id=book[0]) }}"
+                class="add-button"
+            >
+                + Assign Author
+            </a>
+
+            <a
+                href="{{ url_for('assign_category', book_id=book[0]) }}"
+                class="add-button"
+            >
+                + Assign Category
+            </a>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="back-button"
+            >
+                ← Back to Books
+            </a>
+
+        </div>
+
+
+        {% else %}
+
+        <h1>Book Not Found</h1>
+
+        <a
+            href="{{ url_for('home') }}"
+            class="back-button"
+        >
+            ← Back to Books
+        </a>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html> <html> <head>
+<title>Add New Book</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head> <body>
+<div class="form-container">
+
+    <h1>Add New Book</h1>
+
+{% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+{% endif %}
+
+    <form method="POST" class="book-form">
+
+        <label for="title">
+            Title
+        </label>
+
+        <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Enter book title"
+            value="{{ title or '' }}"
+            required
+        >
+
+
+        <label for="isbn">
+            ISBN
+        </label>
+
+        <input
+            type="text"
+            id="isbn"
+            name="isbn"
+            placeholder="Enter ISBN"
+            value="{{ isbn or '' }}"
+
+        >
+
+
+        <label for="publication_year">
+            Publication Year
+        </label>
+
+        <input
+            type="number"
+            id="publication_year"
+            name="publication_year"
+            placeholder="e.g. 2024"
+            value="{{ publication_year or '' }}"
+
+        >
+
+
+        <label for="publisher">
+            Publisher
+        </label>
+
+        <input
+            type="text"
+            id="publisher"
+            name="publisher"
+            placeholder="Enter publisher"
+            value="{{ publisher or '' }}"
+        >
+
+
+        <button
+            type="submit"
+            class="add-book-button"
+        >
+            + Add Book
+        </button>
+
+    </form>
+
+
+    <a
+        class="back-button"
+        href="{{ url_for('home') }}"
+    >
+        ← Back to Books
+    </a>
+
+</div>
+
+</body> </html>

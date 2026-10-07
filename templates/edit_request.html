@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Book Request</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Book Request</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Book</label>
+
+            <select name="book_id" required>
+
+                {% for book in books %}
+                <option value="{{ book[0] }}"
+                    {% if book[0] == request_record[1] %}selected{% endif %}>
+                    {{ book[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Member</label>
+
+            <select name="member_id" required>
+
+                {% for member in members %}
+                <option value="{{ member[0] }}"
+                    {% if member[0] == request_record[2] %}selected{% endif %}>
+                    {{ member[1] }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Request Date</label>
+
+            <input type="date"
+                   name="request_date"
+                   value="{{ request_record[3] }}"
+                   required>
+
+            <label>Status</label>
+
+            <select name="status" required>
+
+                <option value="Pending"
+                    {% if request_record[4] == 'Pending' %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Approved"
+                    {% if request_record[4] == 'Approved' %}selected{% endif %}>
+                    Approved
+                </option>
+
+                <option value="Rejected"
+                    {% if request_record[4] == 'Rejected' %}selected{% endif %}>
+                    Rejected
+                </option>
+
+            </select>
+
+            <button type="submit" class="update-button">
+                Update Request
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('requests') }}">
+            ← Back to Requests
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Staff</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Add New Staff</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Staff Name</label>
+            <input type="text"
+                   name="staff_name"
+                   placeholder="Enter staff name"
+                   required>
+
+            <label>Email</label>
+            <input type="email"
+                   name="email"
+                   placeholder="Enter email">
+
+            <label>Phone</label>
+            <input type="text"
+                   name="phone"
+                   placeholder="Enter phone number">
+
+            <label>Job Title</label>
+            <input type="text"
+                   name="job_title"
+                   placeholder="e.g. Librarian">
+
+            <label>Branch ID</label>
+            <input type="number"
+                   name="branch_id"
+                   placeholder="Enter branch ID"
+                   required>
+
+            <button type="submit" class="add-book-button">
+                Add Staff
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('staff') }}">
+            ← Back to Staff
+        </a>
+
+    </div>
+
+</body>
+</html>

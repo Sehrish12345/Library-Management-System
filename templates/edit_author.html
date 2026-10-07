@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Author</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Author</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Author Name</label>
+
+            <input
+                type="text"
+                name="author_name"
+                value="{{ author[1] }}"
+                required
+            >
+
+            <button type="submit" class="update-button">
+                Update Author
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('authors') }}">
+            ← Back to Authors
+        </a>
+
+    </div>
+
+</body>
+</html>

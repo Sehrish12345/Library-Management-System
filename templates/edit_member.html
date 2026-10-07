@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Member</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-container">
+
+        <h1>Edit Member</h1>
+
+        <form method="POST" class="book-form">
+
+            <label>Member Name</label>
+            <input type="text"
+                   name="member_name"
+                   value="{{ member[1] }}"
+                   required>
+
+            <label>Email</label>
+            <input type="email"
+                   name="email"
+                   value="{{ member[2] or '' }}">
+
+            <label>Phone</label>
+            <input type="text"
+                   name="phone"
+                   value="{{ member[3] or '' }}">
+
+            <label>Address</label>
+            <input type="text"
+                   name="address"
+                   value="{{ member[4] or '' }}">
+
+            <label>Registration Date</label>
+            <input type="date"
+                   name="registration_date"
+                   value="{{ member[5] }}"
+                   required>
+
+            <label>Membership Status</label>
+            <select name="membership_status" required>
+
+                <option value="Active"
+                    {% if member[6] == 'Active' %}selected{% endif %}>
+                    Active
+                </option>
+
+                <option value="Inactive"
+                    {% if member[6] == 'Inactive' %}selected{% endif %}>
+                    Inactive
+                </option>
+
+            </select>
+
+            <button type="submit" class="update-button">
+                Update Member
+            </button>
+
+        </form>
+
+        <a class="back-button" href="{{ url_for('members') }}">
+            ← Back to Members
+        </a>
+
+    </div>
+
+</body>
+</html>
