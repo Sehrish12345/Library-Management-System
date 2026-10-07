@@ -69,26 +69,72 @@ def home():
 
     categories = cursor.fetchall()
 
-    if search:
+    if search and category:
         cursor.execute("""
-            SELECT book_id, title, isbn, publication_year, publisher
+            SELECT DISTINCT
+                b.book_id,
+                b.title,
+                b.isbn,
+                b.publication_year,
+                b.publisher
+            FROM book b
+            JOIN book_category bc
+                ON b.book_id = bc.book_id
+            WHERE b.title ILIKE %s
+              AND bc.category_id = %s
+            ORDER BY b.title
+        """, (f"%{search}%", category))
+
+    elif search:
+        cursor.execute("""
+            SELECT
+                book_id,
+                title,
+                isbn,
+                publication_year,
+                publisher
             FROM book
             WHERE title ILIKE %s
+            ORDER BY title
         """, (f"%{search}%",))
+
+    elif category:
+        cursor.execute("""
+            SELECT DISTINCT
+                b.book_id,
+                b.title,
+                b.isbn,
+                b.publication_year,
+                b.publisher
+            FROM book b
+            JOIN book_category bc
+                ON b.book_id = bc.book_id
+            WHERE bc.category_id = %s
+            ORDER BY b.title
+        """, (category,))
+
     else:
         cursor.execute("""
-            SELECT book_id, title, isbn, publication_year, publisher
+            SELECT
+                book_id,
+                title,
+                isbn,
+                publication_year,
+                publisher
             FROM book
+            ORDER BY title
         """)
 
     books = cursor.fetchall()
+
     cursor.close()
 
     return render_template(
         "home.html",
         books=books,
         search=search,
-        categories=categories
+        categories=categories,
+        selected_category=category
     )
 
 @app.route("/book/<int:book_id>")
