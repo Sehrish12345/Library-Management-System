@@ -70,7 +70,41 @@
             placeholder="Enter publisher"
             value="{{ publisher or '' }}"
         >
+        <label for="author">
+    Author
+</label>
 
+<input
+    type="text"
+    id="author"
+    name="author"
+    list="author-list"
+    placeholder="Select or type author"
+>
+
+<datalist id="author-list">
+    {% for author in authors %}
+        <option value="{{ author[1] }}">
+    {% endfor %}
+</datalist>
+
+ <label for="category">
+    Category
+</label>
+
+<input
+    type="text"
+    id="category"
+    name="category"
+    list="category-list"
+    placeholder="Select or type category"
+>
+
+<datalist id="category-list">
+    {% for category in categories %}
+        <option value="{{ category[1] }}">
+    {% endfor %}
+</datalist>
 
         <button
             type="submit"

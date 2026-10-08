@@ -16,7 +16,9 @@
 
         <form method="POST" class="book-form">
 
-            <label for="title">Title</label>
+            <label for="title">
+                Title
+            </label>
 
             <input
                 type="text"
@@ -26,7 +28,10 @@
                 required
             >
 
-            <label for="isbn">ISBN</label>
+
+            <label for="isbn">
+                ISBN
+            </label>
 
             <input
                 type="text"
@@ -35,7 +40,10 @@
                 value="{{ book[2] or '' }}"
             >
 
-            <label for="publication_year">Publication Year</label>
+
+            <label for="publication_year">
+                Publication Year
+            </label>
 
             <input
                 type="number"
@@ -44,7 +52,10 @@
                 value="{{ book[3] or '' }}"
             >
 
-            <label for="publisher">Publisher</label>
+
+            <label for="publisher">
+                Publisher
+            </label>
 
             <input
                 type="text"
@@ -52,6 +63,47 @@
                 name="publisher"
                 value="{{ book[4] or '' }}"
             >
+
+
+            <label for="author">
+                Author
+            </label>
+
+            <input
+                type="text"
+                id="author"
+                name="author"
+                list="author-list"
+                value="{{ book[5] or '' }}"
+                placeholder="Select or type author"
+            >
+
+            <datalist id="author-list">
+                {% for author in authors %}
+                    <option value="{{ author[1] }}">
+                {% endfor %}
+            </datalist>
+
+
+            <label for="category">
+                Category
+            </label>
+
+            <input
+                type="text"
+                id="category"
+                name="category"
+                list="category-list"
+                value="{{ book[6] or '' }}"
+                placeholder="Select or type category"
+            >
+
+            <datalist id="category-list">
+                {% for category in categories %}
+                    <option value="{{ category[1] }}">
+                {% endfor %}
+            </datalist>
+
 
             <button
                 type="submit"
@@ -61,6 +113,7 @@
             </button>
 
         </form>
+
 
         <a
             class="back-button"

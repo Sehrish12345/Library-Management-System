@@ -302,8 +302,9 @@ def add_book():
             isbn = request.form["isbn"]
             publication_year = request.form["publication_year"]
             publisher = request.form["publisher"]
+            author_name = request.form["author"].strip()
+            category_name = request.form["category"].strip()
 
-            
             if publication_year and int(publication_year) < 1000:
                 return render_template(
                     "add_book.html",
@@ -311,18 +312,112 @@ def add_book():
                     title=title,
                     isbn=isbn,
                     publication_year=publication_year,
-                    publisher=publisher
+                    publisher=publisher,
+                    authors=[],
+                    categories=[]
                 )
 
+            if not author_name:
+                return render_template(
+                    "add_book.html",
+                    error="Please select or enter an author.",
+                    title=title,
+                    isbn=isbn,
+                    publication_year=publication_year,
+                    publisher=publisher,
+                    authors=[],
+                    categories=[]
+                )
+
+            if not category_name:
+                return render_template(
+                    "add_book.html",
+                    error="Please select or enter a category.",
+                    title=title,
+                    isbn=isbn,
+                    publication_year=publication_year,
+                    publisher=publisher,
+                    authors=[],
+                    categories=[]
+                )
+
+            # Add the book first
             cursor.execute("""
                 INSERT INTO book
                 (title, isbn, publication_year, publisher)
                 VALUES (%s, %s, %s, %s)
+                RETURNING book_id
             """, (
                 title,
                 isbn,
                 publication_year,
                 publisher
+            ))
+
+            book_id = cursor.fetchone()[0]
+
+            # Find existing author
+            cursor.execute("""
+                SELECT author_id
+                FROM author
+                WHERE author_name = %s
+            """, (author_name,))
+
+            author = cursor.fetchone()
+
+            if author:
+                author_id = author[0]
+
+            else:
+                # Create new author
+                cursor.execute("""
+                    INSERT INTO author (author_name)
+                    VALUES (%s)
+                    RETURNING author_id
+                """, (author_name,))
+
+                author_id = cursor.fetchone()[0]
+
+            # Connect author with book
+            cursor.execute("""
+                INSERT INTO book_author
+                (book_id, author_id)
+                VALUES (%s, %s)
+            """, (
+                book_id,
+                author_id
+            ))
+
+            # Find existing category
+            cursor.execute("""
+                SELECT category_id
+                FROM category
+                WHERE category_name = %s
+            """, (category_name,))
+
+            category = cursor.fetchone()
+
+            if category:
+                category_id = category[0]
+
+            else:
+                # Create new category
+                cursor.execute("""
+                    INSERT INTO category (category_name)
+                    VALUES (%s)
+                    RETURNING category_id
+                """, (category_name,))
+
+                category_id = cursor.fetchone()[0]
+
+            # Connect category with book
+            cursor.execute("""
+                INSERT INTO book_category
+                (book_id, category_id)
+                VALUES (%s, %s)
+            """, (
+                book_id,
+                category_id
             ))
 
             connection.commit()
@@ -334,11 +429,13 @@ def add_book():
 
             return render_template(
                 "add_book.html",
-                error="This ISBN already exists. Please enter a different ISBN.",
+                error="This ISBN, author, or category already exists. Please check your entries.",
                 title=title,
                 isbn=isbn,
                 publication_year=publication_year,
-                publisher=publisher
+                publisher=publisher,
+                authors=[],
+                categories=[]
             )
 
         except Exception as e:
@@ -351,7 +448,9 @@ def add_book():
                 title=title,
                 isbn=isbn,
                 publication_year=publication_year,
-                publisher=publisher
+                publisher=publisher,
+                authors=[],
+                categories=[]
             )
 
         finally:
@@ -359,9 +458,31 @@ def add_book():
 
         return redirect("/")
 
-    return render_template("add_book.html")
+    cursor = connection.cursor()
 
+    cursor.execute("""
+        SELECT author_id, author_name
+        FROM author
+        ORDER BY author_name
+    """)
 
+    authors = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT category_id, category_name
+        FROM category
+        ORDER BY category_name
+    """)
+
+    categories = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template(
+        "add_book.html",
+        authors=authors,
+        categories=categories
+    )
 @app.route("/edit-book/<int:book_id>", methods=["GET", "POST"])
 def edit_book(book_id):
     cursor = connection.cursor()
@@ -371,46 +492,233 @@ def edit_book(book_id):
         isbn = request.form["isbn"]
         publication_year = request.form["publication_year"]
         publisher = request.form["publisher"]
-    
-    
-        cursor.execute("""
-            UPDATE book
-            SET title = %s,
-                isbn = %s,
-                publication_year = %s,
-                publisher = %s
-            WHERE book_id = %s
-        """, (title, isbn, publication_year, publisher, book_id))
+        author_name = request.form["author"].strip()
+        category_name = request.form["category"].strip()
 
-        connection.commit()
-        cursor.close()
+        try:
+            if publication_year and int(publication_year) < 1000:
+                raise ValueError("Publication Year must be 1000 or greater.")
 
-        return redirect("/")
+            if not author_name:
+                raise ValueError("Please select or enter an author.")
 
+            if not category_name:
+                raise ValueError("Please select or enter a category.")
+
+            # Update basic book information
+            cursor.execute("""
+                UPDATE book
+                SET title = %s,
+                    isbn = %s,
+                    publication_year = %s,
+                    publisher = %s
+                WHERE book_id = %s
+            """, (
+                title,
+                isbn,
+                publication_year,
+                publisher,
+                book_id
+            ))
+
+            # Find existing author
+            cursor.execute("""
+                SELECT author_id
+                FROM author
+                WHERE author_name = %s
+            """, (author_name,))
+
+            author = cursor.fetchone()
+
+            if author:
+                author_id = author[0]
+            else:
+                # Create new author
+                cursor.execute("""
+                    INSERT INTO author (author_name)
+                    VALUES (%s)
+                    RETURNING author_id
+                """, (author_name,))
+
+                author_id = cursor.fetchone()[0]
+
+            # Replace book's author
+            cursor.execute("""
+                DELETE FROM book_author
+                WHERE book_id = %s
+            """, (book_id,))
+
+            cursor.execute("""
+                INSERT INTO book_author
+                (book_id, author_id)
+                VALUES (%s, %s)
+            """, (
+                book_id,
+                author_id
+            ))
+
+            # Find existing category
+            cursor.execute("""
+                SELECT category_id
+                FROM category
+                WHERE category_name = %s
+            """, (category_name,))
+
+            category = cursor.fetchone()
+
+            if category:
+                category_id = category[0]
+            else:
+                # Create new category
+                cursor.execute("""
+                    INSERT INTO category (category_name)
+                    VALUES (%s)
+                    RETURNING category_id
+                """, (category_name,))
+
+                category_id = cursor.fetchone()[0]
+
+            # Replace book's category
+            cursor.execute("""
+                DELETE FROM book_category
+                WHERE book_id = %s
+            """, (book_id,))
+
+            cursor.execute("""
+                INSERT INTO book_category
+                (book_id, category_id)
+                VALUES (%s, %s)
+            """, (
+                book_id,
+                category_id
+            ))
+
+            connection.commit()
+
+            flash("Book updated successfully!", "success")
+
+            return redirect("/")
+
+        except ValueError as e:
+            connection.rollback()
+
+            return render_template(
+                "edit_book.html",
+                error=str(e),
+                book=(book_id, title, isbn, publication_year, publisher,
+                      author_name, category_name),
+                authors=[],
+                categories=[]
+            )
+
+        except Exception as e:
+            connection.rollback()
+            print("EDIT BOOK ERROR:", e)
+
+            return render_template(
+                "edit_book.html",
+                error="Unable to update book. Please check the entered data.",
+                book=(book_id, title, isbn, publication_year, publisher,
+                      author_name, category_name),
+                authors=[],
+                categories=[]
+            )
+
+    # Get current book details
     cursor.execute("""
-        SELECT book_id, title, isbn, publication_year, publisher
-        FROM book
-        WHERE book_id = %s
+        SELECT
+            b.book_id,
+            b.title,
+            b.isbn,
+            b.publication_year,
+            b.publisher,
+            COALESCE(a.author_name, '') AS author_name,
+            COALESCE(c.category_name, '') AS category_name
+        FROM book b
+        LEFT JOIN book_author ba
+            ON b.book_id = ba.book_id
+        LEFT JOIN author a
+            ON ba.author_id = a.author_id
+        LEFT JOIN book_category bc
+            ON b.book_id = bc.book_id
+        LEFT JOIN category c
+            ON bc.category_id = c.category_id
+        WHERE b.book_id = %s
     """, (book_id,))
 
     book = cursor.fetchone()
+
+    # Get authors
+    cursor.execute("""
+        SELECT author_id, author_name
+        FROM author
+        ORDER BY author_name
+    """)
+
+    authors = cursor.fetchall()
+
+    # Get categories
+    cursor.execute("""
+        SELECT category_id, category_name
+        FROM category
+        ORDER BY category_name
+    """)
+
+    categories = cursor.fetchall()
+
     cursor.close()
 
-    return render_template("edit_book.html", book=book)
+    return render_template(
+        "edit_book.html",
+        book=book,
+        authors=authors,
+        categories=categories
+    )
+
 
 @app.route("/delete-book/<int:book_id>", methods=["POST"])
 def delete_book(book_id):
     cursor = connection.cursor()
 
-    cursor.execute(
-        "DELETE FROM book WHERE book_id = %s",
-        (book_id,)
-    )
+    try:
+        # Delete book-author relationship
+        cursor.execute("""
+            DELETE FROM book_author
+            WHERE book_id = %s
+        """, (book_id,))
 
-    connection.commit()
-    cursor.close()
+        # Delete book-category relationship
+        cursor.execute("""
+            DELETE FROM book_category
+            WHERE book_id = %s
+        """, (book_id,))
+
+        # Delete book copies
+        cursor.execute("""
+            DELETE FROM book_copy
+            WHERE book_id = %s
+        """, (book_id,))
+
+        # Finally delete the book
+        cursor.execute("""
+            DELETE FROM book
+            WHERE book_id = %s
+        """, (book_id,))
+
+        connection.commit()
+
+        flash("Book deleted successfully!", "success")
+
+    except Exception as e:
+        connection.rollback()
+        print("DELETE BOOK ERROR:", e)
+
+    finally:
+        cursor.close()
 
     return redirect("/")
+
+
 @app.route("/authors")
 def authors():
     cursor = connection.cursor()

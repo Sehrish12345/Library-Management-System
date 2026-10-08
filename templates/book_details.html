@@ -68,30 +68,16 @@
         </div>
 
 
-        <div class="top-bar">
+           <div class="top-bar">
 
-            <a
-                href="{{ url_for('assign_author', book_id=book[0]) }}"
-                class="add-button"
-            >
-                + Assign Author
-            </a>
+    <a
+        href="{{ url_for('home') }}"
+        class="back-button"
+    >
+        ← Back to Books
+    </a>
 
-            <a
-                href="{{ url_for('assign_category', book_id=book[0]) }}"
-                class="add-button"
-            >
-                + Assign Category
-            </a>
-
-            <a
-                href="{{ url_for('home') }}"
-                class="back-button"
-            >
-                ← Back to Books
-            </a>
-
-        </div>
+    </div> 
 
 
         {% else %}
