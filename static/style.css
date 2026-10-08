@@ -1,4 +1,6 @@
-/* ===== General ===== */
+/* =========================================================
+   GENERAL
+   ========================================================= */
 
 body {
     margin: 0;
@@ -21,18 +23,18 @@ h2 {
 }
 
 
-/* ===== Home Page ===== */
+/* =========================================================
+   HOME PAGE / TOP BAR
+   ========================================================= */
 
-.top-bar,
-.search-box {
+.top-bar {
     width: 90%;
     margin-left: auto;
     margin-right: auto;
-}
-
-.top-bar {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
@@ -48,6 +50,7 @@ h2 {
 
 .add-button {
     background: #7c3aed;
+    transition: all 0.2s ease;
 }
 
 .add-button:hover {
@@ -55,63 +58,135 @@ h2 {
 }
 
 
-/* ===== Search ===== */
+/* =========================================================
+   SEARCH & FILTER
+   ========================================================= */
 
-.search-box {
-    margin-bottom: 25px;
-    text-align: center;
+.search-filter-container {
+    width: 85%;
+    margin: 18px auto 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
 
-.search-box form {
+.search-section,
+.filter-section {
+    background: white;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.06);
+}
+
+.section-title {
+    margin-bottom: 10px;
+    color: #334155;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.search-form,
+.filter-form {
     display: flex;
-    justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
-.search-box input {
-    width: 350px;
-    padding: 11px 14px;
+.search-form input,
+.filter-form select {
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 14px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
+    background: white;
+    color: #334155;
     font-size: 15px;
     outline: none;
+    transition: all 0.2s ease;
 }
 
-.search-box input:focus {
-    border-color: #d97706;
-    box-shadow: 0 0 0 3px rgba(217, 119, 6, .12);
+.search-form input {
+    flex: 1;
+    min-width: 0;
 }
 
-.search-box button {
-    padding: 11px 18px;
-    border: 0;
-    border-radius: 8px;
-    background: #d97706;
-    color: white;
-    font-weight: 600;
+.filter-form select {
+    flex: 1;
+    min-width: 0;
     cursor: pointer;
 }
 
-.search-box button:hover {
-    background: #b45309;
+.search-form input::placeholder {
+    color: #94a3b8;
 }
 
-.search-box a {
-    padding: 11px 18px;
+.search-form input:hover,
+.filter-form select:hover {
+    border-color: #d97706;
+}
+
+.search-form input:focus,
+.filter-form select:focus {
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+}
+
+.search-button,
+.filter-button {
+    height: 44px;
+    padding: 0 18px;
+    border: none;
     border-radius: 8px;
+    background: #d97706;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-button:hover,
+.filter-button:hover {
+    background: #b45309;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
+}
+
+.clear-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 18px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.clear-button:hover {
     background: #e2e8f0;
     color: #334155;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.search-box a:hover {
-    background: #cbd5e1;
+    transform: translateY(-1px);
 }
 
 
-/* ===== Books Table ===== */
+/* =========================================================
+   BOOKS TABLE
+   ========================================================= */
+
+.table-container {
+    width: 90%;
+    margin: 0 auto;
+    overflow-x: auto;
+    border-radius: 12px;
+}
 
 table {
     width: 90%;
@@ -121,6 +196,11 @@ table {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 5px 18px rgba(0, 0, 0, .07);
+}
+
+.table-container table {
+    width: 100%;
+    min-width: 750px;
 }
 
 th {
@@ -139,19 +219,28 @@ tr:hover td {
     background: #f8fafc;
 }
 
-.book-title {
-    color: #334155;
+
+/* =========================================================
+   BOOK TITLE
+   ========================================================= */
+
+.book-title,
+.book-title:visited {
+    color: #2563eb !important;
     text-decoration: none;
     font-weight: 600;
-}
-
-.book-title:visited {
-    color: #334155;
+    transition: color 0.2s ease;
 }
 
 .book-title:hover {
-    color: #7c3aed;
+    color: #1e40af !important;
+    text-decoration: underline;
 }
+
+
+/* =========================================================
+   TABLE ACTION BUTTONS
+   ========================================================= */
 
 td:last-child {
     white-space: nowrap;
@@ -166,10 +255,12 @@ td:last-child > a {
     color: white;
     text-decoration: none;
     font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 td:last-child > a:hover {
     background: #475569;
+    transform: translateY(-1px);
 }
 
 td:last-child button {
@@ -180,19 +271,70 @@ td:last-child button {
     color: white;
     font-size: 14px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 td:last-child button:hover {
     background: #be123c;
+    transform: translateY(-1px);
 }
 
 
-/* ===== Add / Edit Forms ===== */
+/* =========================================================
+   BOTTOM NAVIGATION
+   ========================================================= */
+
+.bottom-navigation {
+    width: 90%;
+    margin: 25px auto 10px;
+}
+
+.bottom-navigation .back-button {
+    display: inline-block;
+    background: #64748b;
+    color: white;
+    text-decoration: none;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.bottom-navigation .back-button:hover {
+    background: #475569;
+}
+
+
+/* =========================================================
+   TOP BAR BACK BUTTON
+   ========================================================= */
+
+.top-bar .back-button {
+    display: inline-block;
+    background: #64748b;
+    color: white;
+    text-decoration: none;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.top-bar .back-button:hover {
+    background: #475569;
+}
+
+
+/* =========================================================
+   ADD / EDIT BOOK FORMS
+   ========================================================= */
 
 .form-container {
     width: 90%;
     max-width: 600px;
     margin: 40px auto;
+}
+
+.form-container h1 {
+    margin-bottom: 10px;
 }
 
 .book-form {
@@ -201,6 +343,7 @@ td:last-child button:hover {
     border-radius: 14px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
     margin: 25px 0;
+    border-top: 4px solid #0f766e;
 }
 
 .book-form label {
@@ -210,7 +353,8 @@ td:last-child button:hover {
     font-weight: 600;
 }
 
-.book-form input {
+.book-form input,
+.book-form select {
     width: 100%;
     box-sizing: border-box;
     padding: 12px 14px;
@@ -221,9 +365,29 @@ td:last-child button:hover {
     outline: none;
 }
 
-.book-form input:focus {
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, .12);
+.book-form input {
+    background: white;
+}
+
+.book-form select {
+    background: white;
+    color: #334155;
+    cursor: pointer;
+}
+
+.book-form input::placeholder {
+    color: #94a3b8;
+}
+
+.book-form input:hover,
+.book-form select:hover {
+    border-color: #94a3b8;
+}
+
+.book-form input:focus,
+.book-form select:focus {
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
 }
 
 .book-form button {
@@ -238,11 +402,11 @@ td:last-child button:hover {
 }
 
 .add-book-button {
-    background: #7c3aed;
+    background: #0f766e;
 }
 
 .add-book-button:hover {
-    background: #6d28d9;
+    background: #0d5f59;
 }
 
 .update-button {
@@ -263,7 +427,9 @@ td:last-child button:hover {
 }
 
 
-/* ===== Book Details ===== */
+/* =========================================================
+   BOOK DETAILS
+   ========================================================= */
 
 .details-container {
     width: 90%;
@@ -281,7 +447,7 @@ td:last-child button:hover {
 .details-header h1 {
     margin: 0;
     text-align: left;
-    color: #334155;
+    color: #0f766e;
 }
 
 .details-header p {
@@ -332,12 +498,18 @@ td:last-child button:hover {
 }
 
 .detail-row:nth-child(2) strong {
-    color: #7c3aed;
+    color: #1e3a8a;
 }
 
 .detail-row:hover {
     background: #fafaf9;
 }
+
+
+/* =========================================================
+   AUTHORS PAGE
+   ========================================================= */
+
 .authors-container {
     width: 90%;
     margin: 30px auto;
@@ -360,21 +532,11 @@ td:last-child button:hover {
     color: #7c3aed;
     font-weight: 600;
 }
-.top-bar .back-button {
-    display: inline-block;
-    background: #64748b;
-    color: white;
-    text-decoration: none;
-    padding: 11px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-}
 
-.top-bar .back-button:hover {
-    background: #475569;
-}
 
-/* ===== Login Page ===== */
+/* =========================================================
+   LOGIN PAGE
+   ========================================================= */
 
 .login-container {
     width: 400px;
@@ -396,6 +558,7 @@ td:last-child button:hover {
     text-align: center;
     color: #334155;
 }
+
 .login-container .form-group {
     margin-bottom: 18px;
     text-align: left;
@@ -407,6 +570,7 @@ td:last-child button:hover {
     color: #334155;
     font-weight: 600;
 }
+
 .login-container .form-group input {
     width: 100%;
     box-sizing: border-box;
@@ -416,10 +580,12 @@ td:last-child button:hover {
     font-size: 15px;
     outline: none;
 }
+
 .login-container .form-group input:focus {
     border-color: #0f766e;
     box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
 }
+
 .login-button {
     width: 100%;
     padding: 12px;
@@ -431,9 +597,11 @@ td:last-child button:hover {
     font-weight: 600;
     cursor: pointer;
 }
+
 .login-button:hover {
     background: #0d5f59;
 }
+
 .error-message {
     margin-bottom: 20px;
     padding: 10px;
@@ -443,7 +611,22 @@ td:last-child button:hover {
     border-radius: 8px;
     font-size: 14px;
 }
-/* ===== Dashboard ===== */
+
+.success-message {
+    width: 90%;
+    margin: 0 auto 20px;
+    padding: 12px 15px;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
 
 .dashboard-header {
     background: #0f766e;
@@ -474,7 +657,6 @@ td:last-child button:hover {
     text-decoration: underline;
 }
 
-
 .dashboard-container {
     width: 90%;
     margin: 35px auto;
@@ -485,78 +667,46 @@ td:last-child button:hover {
     margin-bottom: 25px;
 }
 
-
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
-
 .dashboard-card {
     display: block;
+    min-height: 120px;
+    box-sizing: border-box;
     padding: 25px;
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     text-decoration: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, .06);
+    transition: all 0.2s ease;
 }
-
 
 .dashboard-card h3 {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     color: #0f766e;
-    font-size: 19px;
+    font-size: 20px;
 }
-
 
 .dashboard-card p {
     margin: 0;
     color: #64748b;
     font-size: 14px;
+    line-height: 1.6;
 }
-
 
 .dashboard-card:hover {
     border-color: #0f766e;
     box-shadow: 0 8px 20px rgba(15, 118, 110, .12);
-}
-.dashboard-card:hover {
-    transform: translateY(-4px);
-}
-@media (max-width: 800px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 500px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .dashboard-header h1 {
-        text-align: center;
-    }
-}
-/* ===== Dashboard Card Animation ===== */
-
-.dashboard-card {
-    transition: all 0.2s ease;
-}
-
-.dashboard-card:hover {
     transform: translateY(-5px);
 }
-/* last saved */
-/* ===== Dashboard Card Colors ===== */
+
+
+/* Dashboard Card Colors */
 
 .dashboard-card:nth-child(1) h3 {
     color: #0f766e;
@@ -605,23 +755,18 @@ td:last-child button:hover {
 .dashboard-card:nth-child(12) h3 {
     color: #4f46e5;
 }
-/* ===== Dashboard Card Improvement ===== */
 
-.dashboard-card {
-    min-height: 120px;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
 
-.dashboard-card h3 {
-    font-size: 20px;
-    margin-bottom: 12px;
-}
+/* =========================================================
+   RESPONSIVE DASHBOARD
+   ========================================================= */
 
-.dashboard-card p {
-    line-height: 1.6;
+@media (max-width: 800px) {
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
-/* ===== Responsive Dashboard ===== */
 
 @media (max-width: 600px) {
 
@@ -650,122 +795,27 @@ td:last-child button:hover {
         padding: 22px;
     }
 
-}
-/* ===== Mobile Dashboard Header ===== */
-
-@media (max-width: 600px) {
-
     .dashboard-header {
         padding: 18px 15px;
         gap: 10px;
+        flex-direction: column;
+        text-align: center;
     }
 
     .dashboard-header h1 {
         font-size: 22px;
+        text-align: center;
     }
 
     .dashboard-user {
         font-size: 14px;
     }
-
-}
-.table-container {
-    width: 90%;
-    margin: 0 auto;
-    overflow-x: auto;
-    border-radius: 12px;
-}
-
-.table-container table {
-    width: 100%;
-    min-width: 750px;
-}
- /* ===== Books Page Buttons ===== */
-
-.top-bar {
-    align-items: center;
-    gap: 10px;
-}
-
-.top-bar .back-button {
-    background: #64748b;
-}
-
-.top-bar .back-button:hover {
-    background: #475569;
-}
-
-.add-button {
-    transition: all 0.2s ease;
-}
-
-.search-box button,
-.search-box a {
-    transition: all 0.2s ease;
-}
-
-td:last-child > a,
-td:last-child button {
-    transition: all 0.2s ease;
-}
-
-td:last-child > a:hover {
-    transform: translateY(-1px);
-}
-
-td:last-child button:hover {
-    transform: translateY(-1px);
-}
- /* ===== Book Title Color ===== */
-
-.book-title,
-.book-title:visited {
-    color: #2563eb !important;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-.book-title:hover {
-    color: #1e40af !important;
-    text-decoration: underline;
 }
 
 
-.table-container {
-    width: 90%;
-    margin: 0 auto;
-    overflow-x: auto;
-    border-radius: 12px;
-}
-
-.table-container table {
-    width: 100%;
-    min-width: 750px;
-}
-
-
-/* ===== Bottom Navigation ===== */
-
-.bottom-navigation {
-    width: 90%;
-    margin: 25px auto 10px;
-}
-
-.bottom-navigation .back-button {
-    display: inline-block;
-    background: #64748b;
-    color: white;
-    text-decoration: none;
-    padding: 11px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.bottom-navigation .back-button:hover {
-    background: #475569;
-}
-/* ===== Mobile Book Table ===== */
+/* =========================================================
+   RESPONSIVE BOOK TABLE
+   ========================================================= */
 
 @media (max-width: 600px) {
 
@@ -784,285 +834,32 @@ td:last-child button:hover {
         padding: 6px 9px;
         font-size: 13px;
     }
-
-}
-/* ===== Add Book Page Improvement ===== */
-
-.form-container h1 {
-    margin-bottom: 10px;
-}
-
-.book-form {
-    border-top: 4px solid #0f766e;
-}
-
-.book-form input::placeholder {
-    color: #94a3b8;
-}
-
-.book-form input:hover {
-    border-color: #94a3b8;
-}
-
-.book-form input:focus {
-    border-color: #0f766e;
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
-}
-
-.add-book-button {
-    background: #0f766e;
-}
-
-.add-book-button:hover {
-    background: #0d5f59;
-}
-/* ===== Book Details Title ===== */
-
-.details-header h1 {
-    color: #0f766e;
-}
-
-.details-header p {
-    color: #64748b;
-}
-/* ===== Book Title in Details Card ===== */
-
-.detail-row:nth-child(2) strong {
-    color: #1e3a8a;
-}
-/* ===== Assign Category Form ===== */
-
-.book-form select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    margin-bottom: 20px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 15px;
-    background: white;
-    color: #334155;
-    outline: none;
-    cursor: pointer;
-}
-
-.book-form select:focus {
-    border-color: #0f766e;
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
-}
-
-.success-message {
-    width: 90%;
-    margin: 0 auto 20px;
-    padding: 12px 15px;
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    font-weight: 600;
-}
-/* Search and Filter Box */
-
-.search-box {
-    margin: 20px 0;
-    padding: 20px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-}
-
-.search-box form {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.search-box input,
-.search-box select {
-    height: 42px;
-    padding: 0 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background-color: white;
-    font-size: 14px;
-}
-
-.search-box input {
-    width: 280px;
-}
-
-.search-box select {
-    width: 200px;
-}
-
-.search-box input:focus,
-.search-box select:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-}
-
-.search-box button {
-    height: 42px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 6px;
-    background-color: #2563eb;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.search-box button:hover {
-    background-color: #1d4ed8;
-}
-
-.search-box a {
-    color: #64748b;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.search-box a:hover {
-    color: #2563eb;
-    text-decoration: underline;
-}
-/* ===== Professional Search & Filter ===== */
-
-.search-box {
-    width: 90%;
-    margin: 20px auto 28px;
-    padding: 18px 20px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.06);
-}
-
-.search-box form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-/* Search input */
-.search-box input {
-    width: 320px;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-.search-box input::placeholder {
-    color: #94a3b8;
-}
-
-.search-box input:hover {
-    border-color: #d97706;
-}
-
-.search-box input:focus {
-    border-color: #d97706;
-    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
-}
-
-/* Category filter */
-.search-box select {
-    width: 210px;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 15px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.search-box select:hover {
-    border-color: #d97706;
-}
-
-.search-box select:focus {
-    border-color: #d97706;
-    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
-}
-
-/* Search button */
-.search-box button {
-    height: 44px;
-    padding: 0 22px;
-    border: none;
-    border-radius: 8px;
-    background: #d97706;
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.search-box button:hover {
-    background: #b45309;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
-}
-
-/* Clear button */
-.search-box a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 18px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    color: #475569;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.search-box a:hover {
-    background: #e2e8f0;
-    color: #334155;
-    transform: translateY(-1px);
 }
 
 
-/* ===== Mobile Search & Filter ===== */
+/* =========================================================
+   RESPONSIVE SEARCH & FILTER
+   ========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
-    .search-box {
+    .search-filter-container {
         width: 95%;
-        padding: 15px;
-        box-sizing: border-box;
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 
-    .search-box form {
+    .search-form,
+    .filter-form {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .search-box input,
-    .search-box select,
-    .search-box button,
-    .search-box a {
+    .search-form input,
+    .filter-form select,
+    .search-button,
+    .filter-button,
+    .clear-button {
         width: 100%;
     }
 }
