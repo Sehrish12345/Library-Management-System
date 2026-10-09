@@ -1628,6 +1628,7 @@ def add_borrowing():
         branches=branches
     )
 
+
 @app.route("/edit-borrowing/<int:borrowing_id>", methods=["GET", "POST"])
 def edit_borrowing(borrowing_id):
     cursor = connection.cursor()
@@ -1638,29 +1639,63 @@ def edit_borrowing(borrowing_id):
         branch_id = request.form["branch_id"]
         borrow_date = request.form["borrow_date"]
         due_date = request.form["due_date"]
-        return_date = request.form["return_date"]
+        return_date = request.form.get("return_date") or None
 
-        cursor.execute("""
-            UPDATE borrowing
-            SET copy_id = %s,
-                member_id = %s,
-                branch_id = %s,
-                borrow_date = %s,
-                due_date = %s,
-                return_date = %s
-            WHERE borrowing_id = %s
-        """, (
-            copy_id,
-            member_id,
-            branch_id,
-            borrow_date,
-            due_date,
-            return_date if return_date else None,
-            borrowing_id
-        ))
+        try:
+            # Update borrowing record
+            cursor.execute("""
+                UPDATE borrowing
+                SET copy_id = %s,
+                    member_id = %s,
+                    branch_id = %s,
+                    borrow_date = %s,
+                    due_date = %s,
+                    return_date = %s
+                WHERE borrowing_id = %s
+                RETURNING copy_id
+            """, (
+                copy_id,
+                member_id,
+                branch_id,
+                borrow_date,
+                due_date,
+                return_date,
+                borrowing_id
+            ))
 
-        connection.commit()
-        cursor.close()
+            result = cursor.fetchone()
+
+            if result is None:
+                connection.rollback()
+                flash("Borrowing record not found.", "error")
+                return redirect("/borrowing")
+
+            # Update copy status according to return date
+            if return_date:
+                cursor.execute("""
+                    UPDATE book_copy
+                    SET status = 'Available'
+                    WHERE copy_id = %s
+                """, (copy_id,))
+
+                flash("Book return date saved successfully.", "success")
+            else:
+                cursor.execute("""
+                    UPDATE book_copy
+                    SET status = 'Borrowed'
+                    WHERE copy_id = %s
+                """, (copy_id,))
+
+                flash("Borrowing updated successfully.", "success")
+
+            connection.commit()
+
+        except Exception:
+            connection.rollback()
+            flash("Unable to update borrowing. Please check the details.", "error")
+
+        finally:
+            cursor.close()
 
         return redirect("/borrowing")
 
@@ -1681,8 +1716,7 @@ def edit_borrowing(borrowing_id):
     cursor.execute("""
         SELECT copy_id, b.title
         FROM book_copy bc
-        JOIN book b
-            ON bc.book_id = b.book_id
+        JOIN book b ON bc.book_id = b.book_id
         ORDER BY b.title
     """)
     copies = cursor.fetchall()
@@ -1710,6 +1744,7 @@ def edit_borrowing(borrowing_id):
         members=members,
         branches=branches
     )
+
 
 @app.route("/delete-borrowing/<int:borrowing_id>", methods=["POST"])
 def delete_borrowing(borrowing_id):
