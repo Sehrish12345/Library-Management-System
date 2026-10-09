@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from psycopg.errors import UniqueViolation
 
 from db import connection
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -1498,6 +1498,7 @@ def borrowing():
 
     return render_template("borrowing.html", borrowings=borrowings)
 
+
 @app.route("/add-borrowing", methods=["GET", "POST"])
 def add_borrowing():
     if request.method == "POST":
@@ -1507,35 +1508,97 @@ def add_borrowing():
         borrow_date = request.form["borrow_date"]
         due_date = request.form["due_date"]
 
-        # connection.rollback()
         cursor = connection.cursor()
 
-        cursor.execute("""
-            INSERT INTO borrowing
-            (copy_id, member_id, branch_id, borrow_date, due_date)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (
-            copy_id,
-            member_id,
-            branch_id,
-            borrow_date,
-            due_date
-        ))
+        try:
+            # Validate dates
+            borrow = datetime.strptime(borrow_date, "%Y-%m-%d").date()
+            due = datetime.strptime(due_date, "%Y-%m-%d").date()
 
-        connection.commit()
-        cursor.close()
+            if due < borrow:
+                flash("Due date cannot be before borrow date.", "error")
+                return redirect(url_for("add_borrowing"))
 
-        return redirect("/borrowing")
+            # Lock and check the selected copy
+            cursor.execute("""
+                SELECT status
+                FROM book_copy
+                WHERE copy_id = %s
+                FOR UPDATE
+            """, (copy_id,))
+
+            copy = cursor.fetchone()
+
+            if not copy or copy[0] != "Available":
+                flash("This book copy is not available.", "error")
+                connection.rollback()
+                return redirect(url_for("add_borrowing"))
+
+            # Check member is active
+            cursor.execute("""
+                SELECT member_id
+                FROM member
+                WHERE member_id = %s
+                  AND membership_status = 'Active'
+            """, (member_id,))
+
+            if not cursor.fetchone():
+                flash("Please select an active member.", "error")
+                connection.rollback()
+                return redirect(url_for("add_borrowing"))
+
+            # Check branch exists
+            cursor.execute("""
+                SELECT branch_id
+                FROM branches
+                WHERE branch_id = %s
+            """, (branch_id,))
+
+            if not cursor.fetchone():
+                flash("Selected branch does not exist.", "error")
+                connection.rollback()
+                return redirect(url_for("add_borrowing"))
+
+            # Create borrowing record
+            cursor.execute("""
+                INSERT INTO borrowing
+                (copy_id, member_id, branch_id, borrow_date, due_date)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                copy_id, member_id, branch_id,
+                borrow_date, due_date
+            ))
+
+            # Mark the copy as borrowed
+            cursor.execute("""
+                UPDATE book_copy
+                SET status = 'Borrowed'
+                WHERE copy_id = %s
+            """, (copy_id,))
+
+            connection.commit()
+            flash("Book issued successfully.", "success")
+            return redirect(url_for("borrowing"))
+
+        except ValueError:
+            connection.rollback()
+            flash("Please enter valid borrowing dates.", "error")
+            return redirect(url_for("add_borrowing"))
+
+        except Exception:
+            connection.rollback()
+            flash("Unable to issue book. Please check the details.", "error")
+            return redirect(url_for("add_borrowing"))
+
+        finally:
+            cursor.close()
 
     cursor = connection.cursor()
 
     cursor.execute("""
-        SELECT
-            bc.copy_id,
-            b.title
+        SELECT bc.copy_id, b.title
         FROM book_copy bc
-        JOIN book b
-            ON bc.book_id = b.book_id
+        JOIN book b ON bc.book_id = b.book_id
         WHERE bc.status = 'Available'
         ORDER BY b.title
     """)
@@ -1658,6 +1721,10 @@ def delete_borrowing(borrowing_id):
     """, (borrowing_id,))
 
     connection.commit()
+    flash("Borrowing record deleted successfully.", "success")
+
+    connection.rollback()
+    flash("Unable to delete borrowing record.", "error")
     cursor.close()
 
     return redirect("/borrowing")
@@ -1687,50 +1754,77 @@ def requests():
         "requests.html",
         book_requests=book_requests
     )
+
 @app.route("/add-request", methods=["GET", "POST"])
 def add_request():
     if request.method == "POST":
         book_id = request.form["book_id"]
         member_id = request.form["member_id"]
         request_date = request.form["request_date"]
-        status = request.form["status"]
 
-        # connection.rollback()
+        # Get status and handle old Pending value
+        status = request.form.get("status", "Waiting").strip()
+
+        if status == "Pending":
+            status = "Waiting"
+
+        # Validate status against database constraint
+        allowed_statuses = [
+            "Waiting",
+            "Approved",
+            "Rejected",
+            "Completed"
+        ]
+
+        if status not in allowed_statuses:
+            flash("Invalid request status selected.", "error")
+            return redirect(url_for("add_request"))
+
         cursor = connection.cursor()
 
-        cursor.execute("""
-            INSERT INTO request
-            (book_id, member_id, request_date, status)
-            VALUES (%s, %s, %s, %s)
-        """, (
-            book_id,
-            member_id,
-            request_date,
-            status
-        ))
+        try:
+            cursor.execute("""
+                INSERT INTO request
+                (book_id, member_id, request_date, status)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                book_id,
+                member_id,
+                request_date,
+                status
+            ))
 
-        connection.commit()
-        cursor.close()
+            connection.commit()
+            flash("Book request added successfully.", "success")
 
-        return redirect("/requests")
+        except Exception:
+            connection.rollback()
+            flash("Unable to add request. Please check the details.", "error")
+
+        finally:
+            cursor.close()
+
+        return redirect(url_for("requests"))
 
     cursor = connection.cursor()
 
-    cursor.execute("""
-        SELECT book_id, title
-        FROM book
-        ORDER BY title
-    """)
-    books = cursor.fetchall()
+    try:
+        cursor.execute("""
+            SELECT book_id, title
+            FROM book
+            ORDER BY title
+        """)
+        books = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT member_id, member_name
-        FROM member
-        ORDER BY member_name
-    """)
-    members = cursor.fetchall()
+        cursor.execute("""
+            SELECT member_id, member_name
+            FROM member
+            ORDER BY member_name
+        """)
+        members = cursor.fetchall()
 
-    cursor.close()
+    finally:
+        cursor.close()
 
     return render_template(
         "add_request.html",
@@ -1803,19 +1897,34 @@ def edit_request(request_id):
         members=members
     )
 
+
 @app.route("/delete-request/<int:request_id>", methods=["POST"])
 def delete_request(request_id):
     cursor = connection.cursor()
 
-    cursor.execute("""
-        DELETE FROM request
-        WHERE request_id = %s
-    """, (request_id,))
+    try:
+        cursor.execute("""
+            DELETE FROM request
+            WHERE request_id = %s
+        """, (request_id,))
 
-    connection.commit()
-    cursor.close()
+        if cursor.rowcount > 0:
+            connection.commit()
+            flash("Request deleted successfully.", "success")
+        else:
+            connection.rollback()
+            flash("Request not found.", "error")
+
+    except Exception:
+        connection.rollback()
+        flash("Unable to delete request.", "error")
+
+    finally:
+        cursor.close()
 
     return redirect("/requests")
+
+
 @app.route("/returns")
 def returns():
     cursor = connection.cursor()

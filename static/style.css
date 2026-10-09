@@ -864,20 +864,24 @@ td:last-child button:hover {
     }
 }
 
+
 .error {
-    color: red;
-    background-color: #ffe6e6;
+    color: #721c24;
+    background-color: #f8d7da;
     border: 1px solid red;
     padding: 10px;
+    margin: 10px 0;
     border-radius: 5px;
     font-weight: bold;
 }
 
 .success {
-    color: green;
-    background-color: #e6ffe6;
+    color: #155724;
+    background-color: #d4edda;
     border: 1px solid green;
     padding: 10px;
+    margin: 10px 0;
     border-radius: 5px;
     font-weight: bold;
 }
+
