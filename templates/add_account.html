@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +7,6 @@
 </head>
 
 <body>
-
     <div class="form-container">
 
         <h1>Add Account Transaction</h1>
@@ -14,8 +14,7 @@
         <form method="POST" class="book-form">
 
             <label>Member</label>
-
-            <select name="member_id" required>
+            <select name="member_id" id="member_id" required>
                 <option value="">Select Member</option>
 
                 {% for member in members %}
@@ -26,36 +25,38 @@
             </select>
 
             <label>Borrowing</label>
-
-            <select name="borrowing_id" required>
+            <select name="borrowing_id" id="borrowing_id" required>
                 <option value="">Select Borrowing</option>
 
                 {% for borrowing in borrowings %}
-                <option value="{{ borrowing[0] }}">
+                <option
+                    value="{{ borrowing[0] }}"
+                    data-due="{{ borrowing[3] }}"
+                    data-return="{{ borrowing[4] or '' }}"
+                    data-member="{{ borrowing[5] }}"
+                >
                     #{{ borrowing[0] }} - {{ borrowing[1] }} ({{ borrowing[2] }})
                 </option>
                 {% endfor %}
             </select>
 
-            <label>Amount</label>
-            <input type="number"
-                   name="amount"
-                   step="0.01"
-                   min="0"
-                   placeholder="Enter amount"
-                   required>
+            <label>Calculated Fine (Rs.)</label>
+            <input type="number" id="amount" value="0" readonly>
+
+            <p id="fine-message">
+                Fine dekhne ke liye borrowing select karo.
+            </p>
 
             <label>Transaction Date</label>
             <input type="date"
                    name="transaction_date"
+                   id="transaction_date"
                    required>
 
             <label>Status</label>
-
             <select name="status" required>
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
                 <option value="Unpaid">Unpaid</option>
+                <option value="Paid">Paid</option>
             </select>
 
             <button type="submit" class="add-book-button">
@@ -69,6 +70,63 @@
         </a>
 
     </div>
+
+    <script>
+        const memberSelect = document.getElementById("member_id");
+        const borrowingSelect = document.getElementById("borrowing_id");
+        const amountInput = document.getElementById("amount");
+        const message = document.getElementById("fine-message");
+        const dateInput = document.getElementById("transaction_date");
+
+        // Set today's date in the transaction date field.
+        const today = new Date();
+        const localDate = new Date(
+            today.getTime() - today.getTimezoneOffset() * 60000
+        ).toISOString().split("T")[0];
+
+        dateInput.value = localDate;
+
+        function calculateFine() {
+            const option = borrowingSelect.options[borrowingSelect.selectedIndex];
+
+            if (!option.value) {
+                amountInput.value = 0;
+                message.textContent = "Fine dekhne ke liye borrowing select karo.";
+                return;
+            }
+
+            const selectedMember = memberSelect.value;
+            const borrowingMember = option.dataset.member;
+
+            if (selectedMember !== borrowingMember) {
+                amountInput.value = 0;
+                message.textContent = "Ye borrowing selected member ki nahi hai.";
+                return;
+            }
+
+            const dueDate = option.dataset.due;
+            const returnDate = option.dataset.return || localDate;
+
+            const endDate = returnDate > localDate ? localDate : returnDate;
+
+            const due = new Date(dueDate + "T00:00:00");
+            const end = new Date(endDate + "T00:00:00");
+
+            const days = Math.max(
+                Math.floor((end - due) / (1000 * 60 * 60 * 24)),
+                0
+            );
+
+            const fine = days * 10;
+
+            amountInput.value = fine;
+            message.textContent =
+                days + " overdue day(s) × Rs.10 = Rs." + fine;
+        }
+
+        memberSelect.addEventListener("change", calculateFine);
+        borrowingSelect.addEventListener("change", calculateFine);
+    </script>
 
 </body>
 </html>

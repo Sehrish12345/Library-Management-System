@@ -863,3 +863,21 @@ td:last-child button:hover {
         width: 100%;
     }
 }
+
+.error {
+    color: red;
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.success {
+    color: green;
+    background-color: #e6ffe6;
+    border: 1px solid green;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}

@@ -1006,32 +1006,63 @@ def edit_member(member_id):
 
     return render_template("edit_member.html", member=member)
 
+
 @app.route("/delete-member/<int:member_id>", methods=["POST"])
 def delete_member(member_id):
-    cursor = connection.cursor()
+    try:
+        # Check existing borrowing records
+        borrowing_count = connection.execute(
+            "SELECT COUNT(*) FROM borrowing WHERE member_id = %s",
+            (member_id,)
+        ).fetchone()[0]
 
-    cursor.execute("""
-        SELECT
-            (SELECT COUNT(*) FROM borrowing WHERE member_id = %s),
-            (SELECT COUNT(*) FROM request WHERE member_id = %s),
-            (SELECT COUNT(*) FROM account WHERE member_id = %s)
-    """, (member_id, member_id, member_id))
+        if borrowing_count > 0:
+            flash(
+                "Cannot delete member: This member has existing borrowing records.",
+                "error"
+            )
+            return redirect(url_for("members"))
 
-    borrowing_count, request_count, account_count = cursor.fetchone()
+        # Check existing request records
+        request_count = connection.execute(
+            "SELECT COUNT(*) FROM request WHERE member_id = %s",
+            (member_id,)
+        ).fetchone()[0]
 
-    if borrowing_count > 0 or request_count > 0 or account_count > 0:
-        cursor.close()
-        return redirect("/members")
+        if request_count > 0:
+            flash(
+                "Cannot delete member: This member has existing requests.",
+                "error"
+            )
+            return redirect(url_for("members"))
 
-    cursor.execute("""
-        DELETE FROM member
-        WHERE member_id = %s
-    """, (member_id,))
+        # Check existing account records
+        account_count = connection.execute(
+            "SELECT COUNT(*) FROM account WHERE member_id = %s",
+            (member_id,)
+        ).fetchone()[0]
 
-    connection.commit()
-    cursor.close()
+        if account_count > 0:
+            flash(
+                "Cannot delete member: This member has existing account records.",
+                "error"
+            )
+            return redirect(url_for("members"))
 
-    return redirect("/members")
+        # Delete member if no related records exist
+        connection.execute(
+            "DELETE FROM member WHERE member_id = %s",
+            (member_id,)
+        )
+        connection.commit()
+
+        flash("Member deleted successfully.", "success")
+
+    except Exception as e:
+        connection.rollback()
+        flash(f"An error occurred while deleting the member: {e}", "error")
+
+    return redirect(url_for("members"))
 
 @app.route("/branches")
 def branches():
@@ -1148,6 +1179,9 @@ def delete_branch(branch_id):
 
     if copy_count > 0 or staff_count > 0 or borrowing_count > 0:
         cursor.close()
+        flash("Cannot delete branch: Related book copies, staff, or borrowing records exist.",
+        "error")
+
         return redirect("/branches")
 
     cursor.execute("""
@@ -1156,6 +1190,7 @@ def delete_branch(branch_id):
     """, (branch_id,))
 
     connection.commit()
+    flash("Branch deleted successfully.", "success")
     cursor.close()
 
     return redirect("/branches")
@@ -1854,10 +1889,69 @@ def available_books():
         available=available
     )
 
+
 @app.route("/member-accounts")
 def member_accounts():
     cursor = connection.cursor()
 
+    # Get all borrowings and calculate overdue days
+    cursor.execute("""
+        SELECT
+            borrowing_id,
+            member_id,
+            GREATEST(
+                COALESCE(return_date, CURRENT_DATE) - due_date,
+                0
+            ) AS overdue_days
+        FROM borrowing
+    """)
+
+    borrowings = cursor.fetchall()
+
+    for borrowing in borrowings:
+        borrowing_id = borrowing[0]
+        member_id = borrowing[1]
+        overdue_days = borrowing[2]
+
+        # Fine = Rs. 10 per overdue day
+        fine_amount = overdue_days * 10
+
+        # Check whether an account record already exists
+        cursor.execute("""
+            SELECT account_id, status
+            FROM account
+            WHERE borrowing_id = %s
+            ORDER BY account_id
+            LIMIT 1
+        """, (borrowing_id,))
+
+        existing_account = cursor.fetchone()
+
+        if existing_account:
+            account_id = existing_account[0]
+            status = existing_account[1]
+
+            # Update unpaid fines, but keep paid records unchanged
+            if status == "Unpaid":
+                cursor.execute("""
+                    UPDATE account
+                    SET amount = %s
+                    WHERE account_id = %s
+                """, (fine_amount, account_id))
+
+        elif fine_amount > 0:
+            # Add a new record only if a fine is due
+            cursor.execute("""
+                INSERT INTO account
+                    (member_id, borrowing_id, amount,
+                     transaction_date, status)
+                VALUES (%s, %s, %s, CURRENT_DATE, 'Unpaid')
+            """, (member_id, borrowing_id, fine_amount))
+
+    # Save calculated fines
+    connection.commit()
+
+    # Load account records for the page
     cursor.execute("""
         SELECT
             member_name,
@@ -1876,28 +1970,78 @@ def member_accounts():
         "member_accounts.html",
         accounts=accounts
     )
+
+
 @app.route("/add-account", methods=["GET", "POST"])
 def add_account():
+    cursor = connection.cursor()
+
     if request.method == "POST":
         member_id = request.form["member_id"]
         borrowing_id = request.form["borrowing_id"]
-        amount = request.form["amount"]
-        transaction_date = request.form["transaction_date"]
-        status = request.form["status"]
 
-        connection.rollback()
-        cursor = connection.cursor()
+        # Get borrowing details
+        cursor.execute("""
+            SELECT member_id, due_date, return_date
+            FROM borrowing
+            WHERE borrowing_id = %s
+        """, (borrowing_id,))
 
+        borrowing = cursor.fetchone()
+
+        if not borrowing:
+            cursor.close()
+            return "Borrowing record not found.", 404
+
+        actual_member_id, due_date, return_date = borrowing
+
+        # Check that the borrowing belongs to this member
+        if str(actual_member_id) != str(member_id):
+            cursor.close()
+            return "Member and borrowing do not match.", 400
+
+        # Get today's date from the database
+        cursor.execute("SELECT CURRENT_DATE")
+        today = cursor.fetchone()[0]
+
+        # Calculate overdue days
+        if return_date:
+            end_date = return_date
+        else:
+            end_date = today
+
+        overdue_days = max((end_date - due_date).days, 0)
+
+        # Fine is Rs. 10 per overdue day
+        fine_amount = overdue_days * 10
+
+        # Prevent duplicate account records
+        cursor.execute("""
+            SELECT account_id
+            FROM account
+            WHERE borrowing_id = %s
+        """, (borrowing_id,))
+
+        existing_account = cursor.fetchone()
+
+        if existing_account:
+            cursor.close()
+            return (
+                "An account record already exists for this borrowing. "
+                "No duplicate record was added."
+            ), 400
+
+        # Save the calculated fine
         cursor.execute("""
             INSERT INTO account
-            (member_id, borrowing_id, amount, transaction_date, status)
+                (member_id, borrowing_id, amount, transaction_date, status)
             VALUES (%s, %s, %s, %s, %s)
         """, (
             member_id,
             borrowing_id,
-            amount,
-            transaction_date,
-            status
+            fine_amount,
+            today,
+            "Unpaid"
         ))
 
         connection.commit()
@@ -1905,8 +2049,7 @@ def add_account():
 
         return redirect("/member-accounts")
 
-    cursor = connection.cursor()
-
+    # Get members for the dropdown
     cursor.execute("""
         SELECT member_id, member_name
         FROM member
@@ -1914,18 +2057,19 @@ def add_account():
     """)
     members = cursor.fetchall()
 
+    # Get borrowing details for the dropdown and fine preview
     cursor.execute("""
         SELECT
             br.borrowing_id,
             b.title,
-            m.member_name
+            m.member_name,
+            br.due_date,
+            br.return_date,
+            br.member_id
         FROM borrowing br
-        JOIN book_copy bc
-            ON br.copy_id = bc.copy_id
-        JOIN book b
-            ON bc.book_id = b.book_id
-        JOIN member m
-            ON br.member_id = m.member_id
+        JOIN book_copy bc ON br.copy_id = bc.copy_id
+        JOIN book b ON bc.book_id = b.book_id
+        JOIN member m ON br.member_id = m.member_id
         ORDER BY br.borrowing_id
     """)
     borrowings = cursor.fetchall()
@@ -1937,6 +2081,7 @@ def add_account():
         members=members,
         borrowings=borrowings
     )
+
 
 @app.route("/edit-account/<int:account_id>", methods=["GET", "POST"])
 def edit_account(account_id):
