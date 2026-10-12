@@ -34,6 +34,7 @@
             <tr>
                 <th>ID</th>
                 <th>Book</th>
+                <th>Copy ID</th>
                 <th>Member</th>
                 <th>Branch</th>
                 <th>Borrow Date</th>
@@ -51,7 +52,8 @@
                 <td>{{ borrowing[3] }}</td>
                 <td>{{ borrowing[4] }}</td>
                 <td>{{ borrowing[5] }}</td>
-                <td>{{ borrowing[6] or 'Not Returned' }}</td>
+                <td>{{ borrowing[6] }}</td>
+                <td>{{ borrowing[7] or 'Not Returned' }}</td>
 
                 <td>
 

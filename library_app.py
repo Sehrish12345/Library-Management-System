@@ -1476,6 +1476,7 @@ def borrowing():
         SELECT
             br.borrowing_id,
             b.title,
+            br.copy_id,
             m.member_name,
             branches.branch_name,
             br.borrow_date,
@@ -1967,8 +1968,10 @@ def returns():
     cursor.execute("""
         SELECT
             br.borrowing_id,
+            br.copy_id,
             b.title,
             m.member_name,
+            branches.branch_name,
             br.borrow_date,
             br.due_date,
             br.return_date
@@ -1979,6 +1982,8 @@ def returns():
             ON bc.book_id = b.book_id
         JOIN member m
             ON br.member_id = m.member_id
+        Join branches
+            ON br.branch_id = branches.branch_id   
         WHERE br.return_date IS NOT NULL
         ORDER BY br.return_date DESC
     """)

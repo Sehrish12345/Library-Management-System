@@ -11,7 +11,7 @@
 
     <div class="top-bar">
 
-        <a href="{{ url_for('borrowing') }}" class="back-button">
+        <a href="{{ url_for('borrowing') }}" class="borrowing-back-button">
             ← Back to Borrowing
         </a>
 
@@ -27,8 +27,10 @@
 
             <tr>
                 <th>Borrowing ID</th>
+                <th>Copy ID</th>
                 <th>Book</th>
                 <th>Member</th>
+                <th>Branch Name</th>
                 <th>Borrow Date</th>
                 <th>Due Date</th>
                 <th>Return Date</th>
@@ -39,11 +41,12 @@
 
                 <td>{{ item[0] }}</td>
                 <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
+                <td class="book-name">{{ item[2] }}</td>
                 <td>{{ item[3] }}</td>
                 <td>{{ item[4] }}</td>
                 <td>{{ item[5] }}</td>
-
+                <td>{{ item[6] }}</td>
+                <td>{{ item[7] or 'Not Returned' }}</td>
             </tr>
             {% endfor %}
 

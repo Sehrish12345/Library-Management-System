@@ -885,3 +885,24 @@ td:last-child button:hover {
     font-weight: bold;
 }
 
+.book-name {
+    color: purple;
+    font-weight: bold;
+}
+.copy-id {
+    color: inherit;
+    font-weight: normal;
+}
+.borrowing-back-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.borrowing-back-button:hover {
+    background-color: #1d4ed8;
+}
