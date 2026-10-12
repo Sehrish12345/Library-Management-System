@@ -21,6 +21,18 @@
 
     </div>
 
+    
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category_type, message in messages %}
+            <div class="flash-message {{ category_type }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
     <div class="authors-container">
 
         <table>

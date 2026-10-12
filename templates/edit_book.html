@@ -84,26 +84,35 @@
                 {% endfor %}
             </datalist>
 
+        
+<label>Categories</label>
 
-            <label for="category">
-                Category
-            </label>
-
+<div class="category-options">
+    {% for category in categories %}
+        <label>
             <input
-                type="text"
-                id="category"
-                name="category"
-                list="category-list"
-                value="{{ book[6] or '' }}"
-                placeholder="Select or type category"
+                type="checkbox"
+                name="category_ids"
+                value="{{ category[0] }}"
+                {% if category[0]|string in selected_category_ids %}checked{% endif %}
             >
+            {{ category[1] }}
+        </label>
+    {% endfor %}
+</div>
 
-            <datalist id="category-list">
-                {% for category in categories %}
-                    <option value="{{ category[1] }}">
-                {% endfor %}
-            </datalist>
+<label for="new_category">
+    Add a New Category (Optional)
+</label>
 
+<input
+    type="text"
+    id="new_category"
+    name="new_category"
+    placeholder="Enter one new category name"
+>
+
+            
 
             <button
                 type="submit"

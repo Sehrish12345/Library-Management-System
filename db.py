@@ -1,13 +1,15 @@
+
+import os
 import psycopg
+
 connection = psycopg.connect(
-    host="localhost",
-    dbname="library_management_system",
-    user="postgres",
-    password="Toheed.123",
-    port=5432
+    host=os.environ.get("DB_HOST", "localhost"),
+    dbname=os.environ.get("DB_NAME", "library_management_system"),
+    user=os.environ.get("DB_USER", "postgres"),
+    password=os.environ["DB_PASSWORD"],
+    port=int(os.environ.get("DB_PORT", "5432"))
 )
 
-# print("Database connected successfully!")
 
 
 # .\venv\Scripts\Activate.ps1
