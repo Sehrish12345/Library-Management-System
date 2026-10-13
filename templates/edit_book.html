@@ -1,7 +1,10 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Book</title>
 
     <link rel="stylesheet"
@@ -14,12 +17,21 @@
 
         <h1>Edit Book</h1>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+
         <form method="POST" class="book-form">
 
-            <label for="title">
-                Title
-            </label>
-
+            <label for="title">Title</label>
             <input
                 type="text"
                 id="title"
@@ -28,11 +40,7 @@
                 required
             >
 
-
-            <label for="isbn">
-                ISBN
-            </label>
-
+            <label for="isbn">ISBN</label>
             <input
                 type="text"
                 id="isbn"
@@ -40,11 +48,7 @@
                 value="{{ book[2] or '' }}"
             >
 
-
-            <label for="publication_year">
-                Publication Year
-            </label>
-
+            <label for="publication_year">Publication Year</label>
             <input
                 type="number"
                 id="publication_year"
@@ -52,11 +56,7 @@
                 value="{{ book[3] or '' }}"
             >
 
-
-            <label for="publisher">
-                Publisher
-            </label>
-
+            <label for="publisher">Publisher</label>
             <input
                 type="text"
                 id="publisher"
@@ -64,11 +64,7 @@
                 value="{{ book[4] or '' }}"
             >
 
-
-            <label for="author">
-                Author
-            </label>
-
+            <label for="author">Author</label>
             <input
                 type="text"
                 id="author"
@@ -76,6 +72,7 @@
                 list="author-list"
                 value="{{ book[5] or '' }}"
                 placeholder="Select or type author"
+                required
             >
 
             <datalist id="author-list">
@@ -84,55 +81,55 @@
                 {% endfor %}
             </datalist>
 
-        
-<label>Categories</label>
+            <label for="category1_id">Category 1</label>
+            <select
+                id="category1_id"
+                name="category1_id"
+                required
+            >
+                <option value="">Select a Category</option>
 
-<div class="category-options">
-    {% for category in categories %}
-        <label>
+                {% for category in categories %}
+                    <option
+                        value="{{ category[0] }}"
+                        {% if assigned_categories and category[0] == assigned_categories[0][0] %}selected{% endif %}
+                    >
+                        {{ category[1] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="category2">
+                Add Another Category (Optional)
+            </label>
+
             <input
-                type="checkbox"
-                name="category_ids"
-                value="{{ category[0] }}"
-                {% if category[0]|string in selected_category_ids %}checked{% endif %}
+                type="text"
+                id="category2"
+                name="category2"
+                list="category-list"
+                value="{{ category2_value or (assigned_categories[1][1] if assigned_categories|length > 1 else '') }}"
+                placeholder="Select an existing category or type a new one"
+                autocomplete="off"
             >
-            {{ category[1] }}
-        </label>
-    {% endfor %}
-</div>
 
-<label for="new_category">
-    Add a New Category (Optional)
-</label>
+            <datalist id="category-list">
+                {% for category in categories %}
+                    <option value="{{ category[1] }}">
+                {% endfor %}
+            </datalist>
 
-<input
-    type="text"
-    id="new_category"
-    name="new_category"
-    placeholder="Enter one new category name"
->
-
-            
-
-            <button
-                type="submit"
-                class="update-button"
-            >
+            <button type="submit" class="update-button">
                 Update Book
             </button>
 
         </form>
 
-
-        <a
-            class="back-button"
-            href="{{ url_for('home') }}"
-        >
+        <a class="back-button" href="{{ url_for('home') }}">
             ← Back to Books
         </a>
 
     </div>
 
 </body>
-
 </html>
